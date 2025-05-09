@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Consultar Citas</title>
+</head>
+<body>
+    <h1>Consultar Citas</h1>
+    <form th:action="@{/citas/consultar}" method="get">
+        <label>Fecha: <input type="date" name="fecha" /></label><br/>
+        <label>Doctor ID: <input type="number" name="doctorId" /></label><br/>
+        <label>Consultorio ID: <input type="number" name="consultorioId" /></label><br/>
+        <button type="submit">Buscar</button>
+    </form>
+
+    <div th:if="${citas}">
+        <h2>Resultados</h2>
+        <table border="1">
+            <tr><th>Doctor</th><th>Paciente</th><th>Horario</th><th>Consultorio</th><th>Acciones</th></tr>
+            <tr th:each="cita : ${citas}">
+                <td th:text="${cita.doctor.nombre}">Dr.</td>
+                <td th:text="${cita.nombrePaciente}">Paciente</td>
+                <td th:text="${cita.horario}">Horario</td>
+                <td th:text="${cita.consultorio.numero}">N</td>
+                <td>
+                    <a th:href="@{/citas/editar/{id}(id=${cita.id})}">Editar</a> |
+                    <a th:href="@{/citas/cancelar/{id}(id=${cita.id})}">Cancelar</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

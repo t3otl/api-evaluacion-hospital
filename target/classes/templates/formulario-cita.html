@@ -1,12 +1,44 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><title>Nueva Cita</title></head>
+<head>
+    <meta charset="UTF-8">
+    <title>Agendar Cita</title>
+</head>
 <body>
     <h1>Agendar Cita</h1>
+
     <form th:action="@{/citas/guardar}" method="post" th:object="${cita}">
-        <label>Nombre del Paciente: <input type="text" th:field="*{nombrePaciente}" /></label><br/>
-        <label>Horario (ISO): <input type="text" th:field="*{horario}" /></label><br/>
-        <button type="submit">Guardar</button>
+        <label>Nombre del Paciente:
+            <input type="text" th:field="*{nombrePaciente}" required />
+        </label><br/><br/>
+
+        <label>Horario (fecha y hora):
+            <input type="datetime-local" th:field="*{horario}" required />
+        </label><br/><br/>
+
+        <label>Doctor:
+            <select th:field="*{doctor.id}" required>
+                <option value="" disabled selected>-- Selecciona un doctor --</option>
+                <option th:each="doc : ${doctores}"
+                        th:value="${doc.id}"
+                        th:text="${doc.nombre + ' ' + doc.apellidoPaterno + ' (' + doc.especialidad + ')'}">
+                </option>
+            </select>
+        </label><br/><br/>
+
+        <label>Consultorio:
+            <select th:field="*{consultorio.id}" required>
+                <option value="" disabled selected>-- Selecciona un consultorio --</option>
+                <option th:each="con : ${consultorios}"
+                        th:value="${con.id}"
+                        th:text="'Piso ' + ${con.piso} + ' - No. ' + ${con.numero}">
+                </option>
+            </select>
+        </label><br/><br/>
+
+        <button type="submit">Guardar Cita</button>
     </form>
-</body>
-</html>
+
+    <br/>
+    <a href="/citas">Volver al listado</a>
+</
