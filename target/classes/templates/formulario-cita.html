@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Nueva Cita</title></head>
+<body>
+    <h1>Agendar Cita</h1>
+    <form th:action="@{/citas/guardar}" method="post" th:object="${cita}">
+        <label>Nombre del Paciente: <input type="text" th:field="*{nombrePaciente}" /></label><br/>
+        <label>Horario (ISO): <input type="text" th:field="*{horario}" /></label><br/>
+        <button type="submit">Guardar</button>
+    </form>
+</body>
+</html>
