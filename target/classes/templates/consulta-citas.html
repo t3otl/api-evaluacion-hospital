@@ -1,32 +1,57 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
     <title>Consultar Citas</title>
 </head>
 <body>
     <h1>Consultar Citas</h1>
+
     <form th:action="@{/citas/consultar}" method="get">
-        <label>Fecha: <input type="date" name="fecha" /></label><br/>
-        <label>Doctor ID: <input type="number" name="doctorId" /></label><br/>
-        <label>Consultorio ID: <input type="number" name="consultorioId" /></label><br/>
+        Fecha: <input type="date" name="fecha" th:value="${fecha}"/>
+        Doctor:
+        <select name="doctorId">
+            <option value="">Todos</option>
+            <option th:each="doc : ${doctores}" th:value="${doc.id}"
+                    th:selected="${doc.id} == ${doctorId}" 
+                    th:text="${doc.nombre} + ' ' + ${doc.apellidoPaterno}"></option>
+        </select>
+        Consultorio:
+        <select name="consultorioId">
+            <option value="">Todos</option>
+            <option th:each="cons : ${consultorios}" th:value="${cons.id}"
+                    th:selected="${cons.id} == ${consultorioId}" 
+                    th:text="'Consultorio ' + ${cons.numero} + ' - Piso ' + ${cons.piso}"></option>
+        </select>
         <button type="submit">Buscar</button>
     </form>
 
-    <div th:if="${citas}">
-        <h2>Resultados</h2>
-        <table border="1">
-            <tr><th>Doctor</th><th>Paciente</th><th>Horario</th><th>Consultorio</th><th>Acciones</th></tr>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Paciente</th>
+                <th>Horario</th>
+                <th>Doctor</th>
+                <th>Consultorio</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
             <tr th:each="cita : ${citas}">
-                <td th:text="${cita.doctor.nombre}">Dr.</td>
                 <td th:text="${cita.nombrePaciente}">Paciente</td>
-                <td th:text="${cita.horario}">Horario</td>
-                <td th:text="${cita.consultorio.numero}">N</td>
+                <td th:text="${#temporals.format(cita.horario, 'dd/MM/yyyy HH:mm')}">Horario</td>
+                <td th:text="${cita.doctor.nombre} + ' ' + ${cita.doctor.apellidoPaterno}">Doctor</td>
+                <td th:text="'#' + ${cita.consultorio.numero} + ' Piso ' + ${cita.consultorio.piso}">Consultorio</td>
                 <td>
-                    <a th:href="@{/citas/editar/{id}(id=${cita.id})}">Editar</a> |
-                    <a th:href="@{/citas/cancelar/{id}(id=${cita.id})}">Cancelar</a>
+                    <a th:if="${cita.horario.isAfter(T(java.time.LocalDateTime).now())}"
+                       th:href="@{'/citas/editar/' + ${cita.id}}">Editar</a>
+                    &nbsp;
+                    <a th:if="${cita.horario.isAfter(T(java.time.LocalDateTime).now())}"
+                       th:href="@{'/citas/cancelar/' + ${cita.id}}">Cancelar</a>
                 </td>
             </tr>
-        </table>
-    </div>
+        </tbody>
+    </table>
+
 </body>
 </html>
