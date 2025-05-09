@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Controller
@@ -74,7 +75,11 @@ public class CitaController {
     @GetMapping("/editar/{id}")
     public String editarFormulario(@PathVariable Long id, Model model) {
         Cita cita = citaService.obtenerPorId(id);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+        String horarioFormateado = cita.getHorario().format(formatter);
+
         model.addAttribute("cita", cita);
+        model.addAttribute("horarioFormateado", horarioFormateado);
         model.addAttribute("doctores", doctorRepository.findAll());
         model.addAttribute("consultorios", consultorioRepository.findAll());
         return "editar-cita";
