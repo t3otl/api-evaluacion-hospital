@@ -7,28 +7,41 @@
 <body>
     <h1>Editar Cita</h1>
 
-    <form th:action="@{/citas/editar}" th:object="${cita}" method="post">
-        <input type="hidden" th:field="*{id}"/>
+    <!-- Mensajes de error o éxito -->
+    <div th:if="${error}" th:text="${error}" style="color:red;"></div>
+    <div th:if="${mensaje}" th:text="${mensaje}" style="color:green;"></div>
+
+    <form th:action="@{/citas/editar}" method="post" th:object="${cita}">
+        <input type="hidden" th:field="*{id}" />
 
         <label>Nombre del Paciente:</label>
-        <input type="text" th:field="*{nombrePaciente}" required/><br/>
+        <input type="text" th:field="*{nombrePaciente}" required /><br/><br/>
 
-        <label>Horario (ISO):</label>
-        <input type="datetime-local" name="horario" th:value="${horarioFormateado}" required /><br/>
+        <label>Horario (fecha y hora):</label>
+        <input type="datetime-local"
+               th:field="*{horario}"
+               th:value="*{#dates.format(horario, 'yyyy-MM-dd\'T\'HH:mm')}"
+               required /><br/><br/>
 
         <label>Doctor:</label>
-        <select th:field="*{doctor.id}">
-            <option th:each="doc : ${doctores}" th:value="${doc.id}"
-                    th:text="${doc.nombre} + ' ' + ${doc.apellidoPaterno}"
-                    th:selected="${doc.id} == ${cita.doctor.id}"></option>
-        </select><br/>
+        <select th:field="*{doctor.id}" required>
+            <option value="" disabled th:selected="*{doctor == null}">-- Selecciona un doctor --</option>
+            <option th:each="doc : ${doctores}"
+                    th:value="${doc.id}"
+                    th:text="${doc.nombre + ' ' + doc.apellidoPaterno + ' (' + doc.especialidad + ')'}"
+                    th:selected="${cita.doctor != null} ? ${doc.id} == ${cita.doctor.id} : false">
+            </option>
+        </select><br/><br/>
 
         <label>Consultorio:</label>
-        <select th:field="*{consultorio.id}">
-            <option th:each="cons : ${consultorios}" th:value="${cons.id}"
+        <select th:field="*{consultorio.id}" required>
+            <option value="" disabled th:selected="*{consultorio == null}">-- Selecciona un consultorio --</option>
+            <option th:each="cons : ${consultorios}"
+                    th:value="${cons.id}"
                     th:text="'Piso ' + ${cons.piso} + ' - No. ' + ${cons.numero}"
-                    th:selected="${cons.id} == ${cita.consultorio.id}"></option>
-        </select><br/>
+                    th:selected="${cita.consultorio != null} ? ${cons.id} == ${cita.consultorio.id} : false">
+            </option>
+        </select><br/><br/>
 
         <button type="submit">Actualizar</button>
         <a th:href="@{/citas/consultar}">Cancelar</a>

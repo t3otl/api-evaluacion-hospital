@@ -8,23 +8,32 @@
     <h1>Consultar Citas</h1>
 
     <form th:action="@{/citas/consultar}" method="get">
-        Fecha: <input type="date" name="fecha" th:value="${fecha}"/>
+        Fecha:
+        <input type="date" name="fecha" th:value="${fecha}" />
+
         Doctor:
         <select name="doctorId">
             <option value="">Todos</option>
-            <option th:each="doc : ${doctores}" th:value="${doc.id}"
-                    th:selected="${doc.id} == ${doctorId}" 
+            <option th:each="doc : ${doctores}"
+                    th:value="${doc.id}"
+                    th:selected="${doctorId != null and doc.id == doctorId}"
                     th:text="${doc.nombre} + ' ' + ${doc.apellidoPaterno}"></option>
         </select>
+
         Consultorio:
         <select name="consultorioId">
             <option value="">Todos</option>
-            <option th:each="cons : ${consultorios}" th:value="${cons.id}"
-                    th:selected="${cons.id} == ${consultorioId}" 
+            <option th:each="cons : ${consultorios}"
+                    th:value="${cons.id}"
+                    th:selected="${consultorioId != null and cons.id == consultorioId}"
                     th:text="'Consultorio ' + ${cons.numero} + ' - Piso ' + ${cons.piso}"></option>
         </select>
+
         <button type="submit">Buscar</button>
+        <a th:href="@{/citas/consultar}">Limpiar filtros</a>
     </form>
+
+    <br/>
 
     <table border="1">
         <thead>
@@ -37,21 +46,29 @@
             </tr>
         </thead>
         <tbody>
+            <tr th:if="${#lists.isEmpty(citas)}">
+                <td colspan="5">No se encontraron citas con los criterios seleccionados.</td>
+            </tr>
             <tr th:each="cita : ${citas}">
                 <td th:text="${cita.nombrePaciente}">Paciente</td>
                 <td th:text="${#temporals.format(cita.horario, 'dd/MM/yyyy HH:mm')}">Horario</td>
                 <td th:text="${cita.doctor.nombre} + ' ' + ${cita.doctor.apellidoPaterno}">Doctor</td>
                 <td th:text="'#' + ${cita.consultorio.numero} + ' Piso ' + ${cita.consultorio.piso}">Consultorio</td>
                 <td>
-                    <a th:if="${cita.horario.isAfter(T(java.time.LocalDateTime).now())}"
-                       th:href="@{'/citas/editar/' + ${cita.id}}">Editar</a>
-                    &nbsp;
-                    <a th:if="${cita.horario.isAfter(T(java.time.LocalDateTime).now())}"
-                       th:href="@{'/citas/cancelar/' + ${cita.id}}">Cancelar</a>
+                    <span th:if="${cita.horario.isAfter(T(java.time.LocalDateTime).now())}">
+                        <a th:href="@{'/citas/editar/' + ${cita.id}}">Editar</a> |
+                        <a th:href="@{'/citas/cancelar/' + ${cita.id}}"
+                           onclick="return confirm('¿Estás seguro de cancelar esta cita?');">Cancelar</a>
+                    </span>
+                    <span th:if="${cita.horario.isBefore(T(java.time.LocalDateTime).now())}">
+                        Finalizada
+                    </span>
                 </td>
             </tr>
         </tbody>
     </table>
 
+    <br/>
+    <a th:href="@{/citas}">Volver al listado</a>
 </body>
 </html>

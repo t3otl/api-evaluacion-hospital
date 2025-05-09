@@ -7,6 +7,14 @@
 <body>
     <h1>Agendar Cita</h1>
 
+    <!-- Mensajes de error y éxito -->
+    <div th:if="${error}" style="color:red;">
+        <p th:text="${error}"></p>
+    </div>
+    <div th:if="${mensaje}" style="color:green;">
+        <p th:text="${mensaje}"></p>
+    </div>
+
     <form th:action="@{/citas/guardar}" method="post" th:object="${cita}">
         <label>Nombre del Paciente:
             <input type="text" th:field="*{nombrePaciente}" required />
@@ -40,5 +48,6 @@
     </form>
 
     <br/>
-    <a href="/citas">Volver al listado</a>
-</
+    <a th:href="@{/citas}">Volver al listado</a>
+</body>
+</html>
